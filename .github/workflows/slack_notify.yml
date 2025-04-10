@@ -1,0 +1,46 @@
+name: Slack Notification
+
+on:
+  workflow_call:
+    inputs:
+      slack_channel:
+        description: "The Slack channel to send the notification to"
+        required: true
+        type: string
+      slack_color:
+        description: "The color to display in Slack"
+        required: true
+        type: string
+      slack_username:
+        description: "The username to display in Slack"
+        required: true
+        type: string
+      slack_icon:
+        description: "The icon to display in Slack"
+        required: true
+        type: string
+      slack_title:
+        description: "The title to display in Slack"
+        required: true
+        type: string
+      slack_message:
+        description: "The message to send to Slack"
+        required: true
+        type: string
+
+jobs:
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ${{ inputs.slack_channel }}
+          SLACK_COLOR: ${{ inputs.slack_color }}
+          SLACK_USERNAME: ${{ inputs.slack_username }}
+          SLACK_ICON: ${{ inputs.slack_icon }}
+          SLACK_TITLE: ${{ inputs.slack_title }}
+          SLACK_MESSAGE: ${{ inputs.slack_message }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
