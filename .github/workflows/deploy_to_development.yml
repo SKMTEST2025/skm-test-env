@@ -1,0 +1,40 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/**"
+      - "app/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  # 何かしらの依存関係のあるjob
+  deploy_api:
+    uses: ./.github/workflows/xxxx.yml
+    with:
+      xxxx:xxxx
+      xxxx:xxxx
+    secrets: inherit
+
+  # Slack通知処理を呼び出す
+  slack_notification:
+    # deploy_apiの後に実行されるようにする
+    needs: deploy_api
+    # deploy_apiが成功していても失敗していても実行されるようにする
+    if: ${{ always() }}
+    uses: ./.github/workflows/slack_notify.yml
+    with:
+      slack_channel: info-gha
+      # needs.<job_id>.resultで前のジョブの結果を参照できる(success、failure、cancelled、および skipped)
+      slack_color: ${{ needs.deploy_api.result == 'success' && 'good' || 'danger' }}
+      slack_username: GitHub Actions Results
+      slack_icon: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+      slack_title: Deployment to Development dev-qrcode-generator-lambda
+      slack_message: ${{ needs.deploy_api.result == 'success' && ':white_check_mark:Deployment successful' || ':x:Deployment failed' }}
+    secrets: inherit
+
